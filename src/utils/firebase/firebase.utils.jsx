@@ -13,7 +13,16 @@ import {
 	onAuthStateChanged,
 } from "firebase/auth";
 
-import { getFirestore, doc, getDoc, setDoc } from "firebase/firestore";
+import {
+	getFirestore,
+	doc,
+	getDoc,
+	setDoc,
+	collection,
+	writeBatch,
+	query,
+	getDocs,
+} from "firebase/firestore";
 
 // Your web app's Firebase configuration
 const firebaseConfig = {
@@ -28,8 +37,10 @@ const firebaseConfig = {
 // Initialize Firebase
 const firebaseApp = initializeApp(firebaseConfig);
 
+// Export the auth and firestore libraries
 const googleProvider = new GoogleAuthProvider();
 
+// Always trigger the google popup whenever we use the google auth provider for authentication and sign in
 googleProvider.setCustomParameters({ prompt: "select_account" });
 
 export const auth = getAuth();
@@ -40,6 +51,52 @@ export const signInWithGoogleRedirect = () =>
 
 export const db = getFirestore();
 
+/**
+ * 	This function is used to create a document in the firestore database
+ * @param {*} collectionKey  The name of the collection to add the documents to
+ * @param {*} objectsToAdd  The array of objects to add to the collection
+ * @returns
+ */
+export const addCollectionAndDocuments = async (
+	collectionKey,
+	objectsToAdd
+) => {
+	if (!collectionKey || !objectsToAdd) return;
+	const collectionRef = collection(db, collectionKey);
+	const batch = writeBatch(db);
+
+	objectsToAdd.forEach((obj) => {
+		const newDocRef = doc(collectionRef, obj.title.toLowerCase());
+		batch.set(newDocRef, obj);
+	});
+
+	return await batch.commit();
+};
+
+/**
+ *
+ * @returns
+ */
+export const getCategoriesAndDocuments = async () => {
+	const collectionRef = collection(db, "categories");
+	const q = query(collectionRef);
+
+	const querySnapshot = await getDocs(q);
+	const categoryMap = querySnapshot.docs.reduce((acc, docSnapshot) => {
+		const { title, items } = docSnapshot.data();
+		acc[title.toLowerCase()] = items;
+		return acc;
+	}, {});
+
+	return categoryMap;
+};
+
+/**
+ *  This function is used to create a user document in the firestore database
+ * @param {*} userAuth  The user object returned from the auth library
+ * @param {*} additionalData  Any additional data that needs to be stored in the user document
+ * @returns
+ */
 export const createUserDocumentFromAuth = async (userAuth, additionalData) => {
 	if (!userAuth) return;
 
@@ -66,6 +123,12 @@ export const createUserDocumentFromAuth = async (userAuth, additionalData) => {
 	return userDocRef;
 };
 
+/**
+ * 	This function is used to create a user document in the firestore database with the user's email and password
+ * @param {*} email
+ * @param {*} password
+ * @returns
+ */
 export const createAuthUserWithEmailAndPasswordFromAuth = async (
 	email,
 	password
@@ -83,6 +146,12 @@ export const createAuthUserWithEmailAndPasswordFromAuth = async (
 	}
 };
 
+/**
+ * 	This function is used to sign in a user with their email and password
+ * @param {*} email
+ * @param {*} password
+ * @returns
+ */
 export const signInAuthUserWithEmailAndPasswordFromAuth = async (
 	email,
 	password
@@ -96,7 +165,16 @@ export const signInAuthUserWithEmailAndPasswordFromAuth = async (
 	}
 };
 
+/**
+ * 	This function is used to sign out a user
+ * @returns
+ */
 export const signOutUser = async () => await signOut(auth);
 
+/**
+ * 	This function is used to listen for changes in the user's authentication state
+ * @param {*} callback
+ * @returns
+ */
 export const onAuthStateChangedListener = (callback) =>
 	onAuthStateChanged(auth, callback);
