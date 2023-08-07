@@ -41,6 +41,7 @@ To run this project on your local machine, follow these steps:
 - React Router v6
 - Firebase
 - Context API
+- styled-components
 - …
 
 ## Contributing
