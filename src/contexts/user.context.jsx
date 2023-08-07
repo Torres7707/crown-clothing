@@ -20,7 +20,6 @@ export const UserProvider = ({ children }) => {
 		// onAuthStateChangedListener is a function that takes a callback function as an argument,
 		// and it return a function that you can call to unsubscribe from the listener
 		const unsubscribe = onAuthStateChangedListener((user) => {
-			console.log("user", user);
 			if (user) {
 				createUserDocumentFromAuth(user);
 			}

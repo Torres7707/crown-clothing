@@ -1,41 +1,48 @@
-import "./checkout-item.styles.scss";
+import {
+	CheckoutItemContainer,
+	CheckoutItemImageContainer,
+	CheckoutItemImage,
+	CheckoutItemName,
+	CheckoutItemQuantity,
+	CheckoutItemArrow,
+	CheckoutItemValue,
+	CheckoutItemPrice,
+	CheckoutItemRemoveButton,
+} from "./checkout-item.styles.jsx";
 
 const CheckoutItem = ({ cartItem, increment, decrement, clearItem }) => {
 	return (
-		<div className="checkout-item-container">
-			<div className="image-container">
-				<img src={cartItem.imageUrl} alt={cartItem.name} />
-			</div>
-			<span className="name">{cartItem.name}</span>
-			<span className="quantity">
-				<div
-					className="arrow"
+		<CheckoutItemContainer>
+			<CheckoutItemImageContainer>
+				<CheckoutItemImage src={cartItem.imageUrl} alt={cartItem.name} />
+			</CheckoutItemImageContainer>
+			<CheckoutItemName>{cartItem.name}</CheckoutItemName>
+			<CheckoutItemQuantity>
+				<CheckoutItemArrow
 					onClick={() => {
 						decrement(cartItem);
 					}}
 				>
 					&#10094;
-				</div>
+				</CheckoutItemArrow>
 				{cartItem.quantity}
-				<div
-					className="arrow"
+				<CheckoutItemArrow
 					onClick={() => {
 						increment(cartItem);
 					}}
 				>
 					&#10095;
-				</div>
-			</span>
-			<span className="price">{cartItem.price}</span>
-			<div
-				className="remove-button"
+				</CheckoutItemArrow>
+			</CheckoutItemQuantity>
+			<CheckoutItemPrice>{cartItem.price}</CheckoutItemPrice>
+			<CheckoutItemRemoveButton
 				onClick={() => {
 					clearItem(cartItem);
 				}}
 			>
 				&#10005;
-			</div>
-		</div>
+			</CheckoutItemRemoveButton>
+		</CheckoutItemContainer>
 	);
 };
 
