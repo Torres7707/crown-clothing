@@ -1,5 +1,8 @@
 import { useContext } from "react";
 import { Link, Outlet } from "react-router-dom";
+import { useSelector } from "react-redux";
+
+import { selectCurrentUser } from "../../store/user/user.selector";
 
 import CartIcon from "../../components/cart-icon/cart-icon.component";
 import CartDropdown from "../../components/cart-dropdown/cart-dropdown.component";
@@ -18,7 +21,8 @@ import {
 } from "./navigation.styles";
 
 const Navigation = () => {
-	const { currentUser } = useContext(UserContext);
+	const currentUser = useSelector(selectCurrentUser);
+	// const { currentUser } = useContext(UserContext);
 	const { isCartOpen, setIsCartOpen, cartCount } = useContext(CartContext);
 
 	const signOutHandler = async () => {
