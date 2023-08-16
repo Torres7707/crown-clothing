@@ -1,3 +1,12 @@
+import { useDispatch, useSelector } from "react-redux";
+
+import { selectCartItems } from "../../store/cart/cart.selector";
+import {
+	addItemToCart,
+	removeItemFromCart,
+	clearItemFromCart,
+} from "../../store/cart/cart.action";
+
 import {
 	CheckoutItemContainer,
 	CheckoutItemImageContainer,
@@ -10,7 +19,9 @@ import {
 	CheckoutItemRemoveButton,
 } from "./checkout-item.styles.jsx";
 
-const CheckoutItem = ({ cartItem, increment, decrement, clearItem }) => {
+const CheckoutItem = ({ cartItem }) => {
+	const dispatch = useDispatch();
+	const cartItems = useSelector(selectCartItems);
 	return (
 		<CheckoutItemContainer>
 			<CheckoutItemImageContainer>
@@ -20,7 +31,7 @@ const CheckoutItem = ({ cartItem, increment, decrement, clearItem }) => {
 			<CheckoutItemQuantity>
 				<CheckoutItemArrow
 					onClick={() => {
-						decrement(cartItem);
+						dispatch(addItemToCart(cartItems, cartItem));
 					}}
 				>
 					&#10094;
@@ -28,7 +39,7 @@ const CheckoutItem = ({ cartItem, increment, decrement, clearItem }) => {
 				{cartItem.quantity}
 				<CheckoutItemArrow
 					onClick={() => {
-						increment(cartItem);
+						dispatch(removeItemFromCart(cartItems, cartItem));
 					}}
 				>
 					&#10095;
@@ -37,7 +48,7 @@ const CheckoutItem = ({ cartItem, increment, decrement, clearItem }) => {
 			<CheckoutItemPrice>{cartItem.price}</CheckoutItemPrice>
 			<CheckoutItemRemoveButton
 				onClick={() => {
-					clearItem(cartItem);
+					dispatch(clearItemFromCart(cartItems, cartItem));
 				}}
 			>
 				&#10005;
