@@ -31,7 +31,7 @@ const CheckoutItem = ({ cartItem }) => {
 			<CheckoutItemQuantity>
 				<CheckoutItemArrow
 					onClick={() => {
-						dispatch(addItemToCart(cartItems, cartItem));
+						dispatch(removeItemFromCart(cartItems, cartItem));
 					}}
 				>
 					&#10094;
@@ -39,7 +39,7 @@ const CheckoutItem = ({ cartItem }) => {
 				{cartItem.quantity}
 				<CheckoutItemArrow
 					onClick={() => {
-						dispatch(removeItemFromCart(cartItems, cartItem));
+						dispatch(addItemToCart(cartItems, cartItem));
 					}}
 				>
 					&#10095;
