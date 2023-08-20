@@ -5,7 +5,7 @@ import { useSelector } from "react-redux";
 // import { CategoriesContext } from "../../contexts/categories.context";
 import {
 	selectCategoriesMap,
-	selectIsCategoriesFetching,
+	selectIsCategoriesLoading,
 } from "../../store/categories/categories.selector";
 
 import ProductCard from "../../components/product-card/product-card.component";
@@ -17,7 +17,7 @@ const Category = () => {
 	const { category } = useParams();
 	// const { categoriesMap } = useContext(CategoriesContext);
 	const categoriesMap = useSelector(selectCategoriesMap);
-	const isFetching = useSelector(selectIsCategoriesFetching);
+	const isLoading = useSelector(selectIsCategoriesLoading);
 
 	const [products, setProducts] = useState([]);
 
@@ -32,7 +32,7 @@ const Category = () => {
 	return (
 		<>
 			<CategoryTitle>{category.toUpperCase()}</CategoryTitle>
-			{isFetching ? (
+			{isLoading ? (
 				<Spinner />
 			) : (
 				<CategoryContainer>

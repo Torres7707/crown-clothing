@@ -7,17 +7,17 @@ import Spinner from "../../components/spinner/spinner.component";
 
 import {
 	selectCategoriesMap,
-	selectIsCategoriesFetching,
+	selectIsCategoriesLoading,
 } from "../../store/categories/categories.selector";
 
 const CategoriesPreview = () => {
 	// const { categoriesMap } = useContext(CategoriesContext);
 	const categoriesMap = useSelector(selectCategoriesMap);
-	const isFetching = useSelector(selectIsCategoriesFetching);
+	const isLoading = useSelector(selectIsCategoriesLoading);
 
 	return (
 		<>
-			{isFetching ? (
+			{isLoading ? (
 				<Spinner />
 			) : (
 				Object.keys(categoriesMap).map((category) => {

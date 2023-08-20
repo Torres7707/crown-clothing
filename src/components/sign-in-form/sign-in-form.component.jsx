@@ -1,13 +1,19 @@
 import { useState } from "react";
+import { useDispatch } from "react-redux";
 
 import FormInput from "../form-input/form-input.component";
 import Button, { BUTTON_TYPE_CLASSES } from "../button/button.component";
-import { signInWithGooglePopup } from "../../utils/firebase/firebase.utils";
+
+// import {
+// 	signInWithGooglePopup,
+// 	createUserDocumentFromAuth,
+// 	signInAuthUserWithEmailAndPassword,
+// } from "../../utils/firebase/firebase.utils";
 
 import {
-	createUserDocumentFromAuth,
-	signInAuthUserWithEmailAndPasswordFromAuth,
-} from "../../utils/firebase/firebase.utils";
+	googleSignInStart,
+	emailSignInStart,
+} from "../../store/user/user.action";
 
 import {
 	SignInContainer,
@@ -34,6 +40,7 @@ const FORM_INPUT_ARRAY = [
 ];
 
 const SignInForm = () => {
+	const dispatch = useDispatch();
 	const [formFields, setFormFields] = useState(defaultFormFields);
 	const { email, password } = formFields;
 
@@ -45,39 +52,22 @@ const SignInForm = () => {
 	const handleSubmit = async (event) => {
 		event.preventDefault();
 		try {
-			const user = await signInAuthUserWithEmailAndPasswordFromAuth(
-				email,
-				password
-			);
+			// const user = await signInAuthUserWithEmailAndPassword(email, password);
 			// setCurrentUser(user);
+			dispatch(emailSignInStart(email, password));
 			setFormFields(defaultFormFields);
 		} catch (error) {
-			switch (error.code) {
-				case "auth/invalid-email":
-					alert("Invalid email. Please try again.");
-					break;
-				case "auth/user-disabled":
-					alert("User disabled. Please contact support.");
-					break;
-				case "auth/user-not-found":
-					alert("User not found. Please sign up first.");
-					break;
-				case "auth/wrong-password":
-					alert("Incorrect password. Please try again.");
-					break;
-				default:
-					alert("Something went wrong. Please try again.");
-					console.log(error);
-			}
+			console.log("user sign in failed", error);
 		}
 	};
 
 	const signInWithGoogleUser = async () => {
-		try {
-			await signInWithGooglePopup();
-		} catch (error) {
-			console.log(error);
-		}
+		// try {
+		// 	await signInWithGooglePopup();
+		// } catch (error) {
+		// 	console.log(error);
+		// }
+		dispatch(googleSignInStart());
 	};
 
 	return (

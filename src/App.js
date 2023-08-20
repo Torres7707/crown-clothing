@@ -5,6 +5,7 @@ import { Routes, Route } from "react-router-dom";
 import {
 	onAuthStateChangedListener,
 	createUserDocumentFromAuth,
+	getCurrentUser,
 } from "./utils/firebase/firebase.utils";
 
 import Navigation from "./routes/navigation/navigation.component";
@@ -12,7 +13,7 @@ import Home from "./routes/home/home.component";
 import Authentication from "./routes/authentication/authentication.component";
 import Shop from "./routes/shop/shop.component";
 import Checkout from "./routes/checkout/checkout.component";
-import { setCurrentUser } from "./store/user/user.action";
+import { checkUserSession } from "./store/user/user.action";
 
 const App = () => {
 	const dispatch = useDispatch();
@@ -21,14 +22,15 @@ const App = () => {
 		// onAuthStateChangedListener is a function can listen to the auth state change,when the auth state change,
 		// it will call the callback function you pass in
 		// and it return a function that you can call to unsubscribe from the listener
-		const unsubscribe = onAuthStateChangedListener((user) => {
-			if (user) {
-				createUserDocumentFromAuth(user);
-			}
-			dispatch(setCurrentUser(user));
-		});
+		// const unsubscribe = onAuthStateChangedListener((user) => {
+		// 	if (user) {
+		// 		createUserDocumentFromAuth(user);
+		// 	}
+		// 	dispatch(setCurrentUser(user));
+		// });
+		// return unsubscribe;
 
-		return unsubscribe;
+		dispatch(checkUserSession());
 	}, [dispatch]);
 
 	return (
