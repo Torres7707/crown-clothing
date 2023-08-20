@@ -3,15 +3,23 @@ import { useSelector } from "react-redux";
 
 // import { CategoriesContext } from "../../contexts/categories.context";
 import CategoryPreview from "../../components/category-preview/category-preview.component";
+import Spinner from "../../components/spinner/spinner.component";
 
-import { selectCategoriesMap } from "../../store/categories/categories.selector";
+import {
+	selectCategoriesMap,
+	selectIsCategoriesFetching,
+} from "../../store/categories/categories.selector";
 
 const CategoriesPreview = () => {
 	// const { categoriesMap } = useContext(CategoriesContext);
 	const categoriesMap = useSelector(selectCategoriesMap);
+	const isFetching = useSelector(selectIsCategoriesFetching);
+
 	return (
 		<>
-			{categoriesMap &&
+			{isFetching ? (
+				<Spinner />
+			) : (
 				Object.keys(categoriesMap).map((category) => {
 					const products = categoriesMap[category];
 					return (
@@ -21,7 +29,8 @@ const CategoriesPreview = () => {
 							products={products}
 						/>
 					);
-				})}
+				})
+			)}
 		</>
 	);
 };
