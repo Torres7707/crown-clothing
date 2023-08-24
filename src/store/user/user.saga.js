@@ -97,7 +97,7 @@ export function* onGoogleSignInStart() {
 }
 
 export function* onEmailSignInStart() {
-	yield takeLatest(USER_ACTION_TYPES.EMAIL_SIGN_IN_START, signInWithEmail);
+	yield takeLatest("USER_ACTION_TYPES.EMAIL_SIGN_IN_START", signInWithEmail);
 }
 
 export function* onSignUpStart() {
