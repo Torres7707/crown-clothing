@@ -11,6 +11,8 @@ import {
 	signInWithEmailAndPassword,
 	signOut,
 	onAuthStateChanged,
+	User,
+	NextOrObserver,
 } from "firebase/auth";
 
 import {
@@ -22,7 +24,9 @@ import {
 	writeBatch,
 	query,
 	getDocs,
+	QueryDocumentSnapshot,
 } from "firebase/firestore";
+import { Category } from "../../store/categories/categories.types";
 
 // Your web app's Firebase configuration
 const firebaseConfig = {
@@ -51,16 +55,19 @@ export const signInWithGoogleRedirect = () =>
 
 export const db = getFirestore();
 
+export type ObjectToAdd = {
+	title: string;
+};
 /**
  * 	This function is used to create a document in the firestore database
  * @param {*} collectionKey  The name of the collection to add the documents to
  * @param {*} objectsToAdd  The array of objects to add to the collection
  * @returns
  */
-export const addCollectionAndDocuments = async (
-	collectionKey,
-	objectsToAdd
-) => {
+export const addCollectionAndDocuments = async <T extends ObjectToAdd>(
+	collectionKey: string,
+	objectsToAdd: T[]
+): Promise<void> => {
 	if (!collectionKey || !objectsToAdd) return;
 	const collectionRef = collection(db, collectionKey);
 	const batch = writeBatch(db);
@@ -77,12 +84,14 @@ export const addCollectionAndDocuments = async (
  *
  * @returns
  */
-export const getCategoriesAndDocuments = async () => {
+export const getCategoriesAndDocuments = async (): Promise<Category[]> => {
 	const collectionRef = collection(db, "categories");
 	const q = query(collectionRef);
 
 	const querySnapshot = await getDocs(q);
-	return querySnapshot.docs.map((docSnapshot) => docSnapshot.data());
+	return querySnapshot.docs.map(
+		(docSnapshot) => docSnapshot.data() as Category
+	);
 	// const categoryMap = querySnapshot.docs.reduce((acc, docSnapshot) => {
 	// 	const { title, items } = docSnapshot.data();
 	// 	acc[title.toLowerCase()] = items;
@@ -92,13 +101,26 @@ export const getCategoriesAndDocuments = async () => {
 	// return categoryMap;
 };
 
+export type AdditionalInformation = {
+	displayName?: string;
+};
+
+export type UserData = {
+	createAt: Date;
+	displayName: string;
+	email: string;
+};
+
 /**
  *  This function is used to create a user document in the firestore database
  * @param {*} userAuth  The user object returned from the auth library
  * @param {*} additionalData  Any additional data that needs to be stored in the user document
  * @returns
  */
-export const createUserDocumentFromAuth = async (userAuth, additionalData) => {
+export const createUserDocumentFromAuth = async (
+	userAuth: User,
+	additionalData = {} as AdditionalInformation
+): Promise<void | QueryDocumentSnapshot<UserData>> => {
 	if (!userAuth) return;
 
 	const userDocRef = doc(db, "users", userAuth.uid);
@@ -120,7 +142,7 @@ export const createUserDocumentFromAuth = async (userAuth, additionalData) => {
 		}
 	}
 
-	return userSnap;
+	return userSnap as QueryDocumentSnapshot<UserData>;
 };
 
 /**
@@ -130,8 +152,8 @@ export const createUserDocumentFromAuth = async (userAuth, additionalData) => {
  * @returns
  */
 export const createAuthUserWithEmailAndPasswordFromAuth = async (
-	email,
-	password
+	email: string,
+	password: string
 ) => {
 	if (!email || !password) return;
 	try {
@@ -147,7 +169,10 @@ export const createAuthUserWithEmailAndPasswordFromAuth = async (
  * @param {*} password
  * @returns
  */
-export const signInAuthUserWithEmailAndPassword = async (email, password) => {
+export const signInAuthUserWithEmailAndPassword = async (
+	email: string,
+	password: string
+) => {
 	if (!email || !password) return;
 	try {
 		const user = await signInWithEmailAndPassword(auth, email, password);
@@ -168,14 +193,14 @@ export const signOutUser = async () => await signOut(auth);
  * @param {*} callback
  * @returns
  */
-export const onAuthStateChangedListener = (callback) =>
+export const onAuthStateChangedListener = (callback: NextOrObserver<User>) =>
 	onAuthStateChanged(auth, callback);
 
 /**
  * 	This function is used to get the current user
  * @returns
  */
-export const getCurrentUser = () => {
+export const getCurrentUser = (): Promise<User | null> => {
 	return new Promise((resolve, reject) => {
 		const unsubscribe = onAuthStateChanged(
 			auth,
